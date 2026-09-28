@@ -1,0 +1,142 @@
+local s = Instance.new("ScreenGui", game:GetService("CoreGui"))
+s.Name = "NoobVN_RideAPet"
+local f = Instance.new("Frame", s)
+f.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+f.Position = UDim2.new(0.05, 0, 0.2, 0)
+f.Size = UDim2.new(0, 240, 0, 430)
+f.Active = true
+f.Draggable = true
+
+local t = Instance.new("TextLabel", f)
+t.Size = UDim2.new(1, 0, 0, 35)
+t.BackgroundColor3 = Color3.fromRGB(5, 5, 5)
+t.TextColor3 = Color3.fromRGB(255, 255, 255)
+t.TextSize = 15
+t.Text = "NOOBVN HUB - PRO V1.2"
+
+local function b(name, y, cb)
+    local btn = Instance.new("TextButton", f)
+    btn.Position = UDim2.new(0.08, 0, 0, y)
+    btn.Size = UDim2.new(0.84, 0, 0, 32)
+    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    btn.TextColor3 = Color3.fromRGB(240, 240, 240)
+    btn.TextSize = 13
+    btn.Text = name
+    btn.MouseButton1Click:Connect(cb)
+end
+
+-- 1. ESP Trứng
+b("ESP Trứng (Egg ESP)", 45, function()
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if obj:IsA("Model") and string.find(obj.Name, "Egg") then
+            if not obj:FindFirstChildOfClass("Highlight") then
+                local h = Instance.new("Highlight", obj)
+                h.FillColor = Color3.fromRGB(255, 165, 0)
+            end
+        end
+    end
+end)
+
+-- 2. Teleport đến Trứng gần nhất
+b("Teleport Trứng Gần Nhất", 82, function()
+    local p = game.Players.LocalPlayer.Character
+    if p and p:FindFirstChild("HumanoidRootPart") then
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            if obj:IsA("Model") and string.find(obj.Name, "Egg") then
+                local part = obj:FindFirstChild("PrimaryPart") or obj:FindFirstChildWhichIsA("BasePart")
+                if part then
+                    p.HumanoidRootPart.CFrame = part.CFrame + Vector3.new(0, 3, 0)
+                    break
+                end
+            end
+        end
+    end
+end)
+
+-- 3. Tự động tương tác/lượm trứng quanh người
+b("Auto Farm / Nhặt Trứng Nhanh", 119, function()
+    task.spawn(function()
+        while task.wait(0.5) do
+            local p = game.Players.LocalPlayer.Character
+            if p and p:FindFirstChild("HumanoidRootPart") then
+                for _, obj in ipairs(workspace:GetDescendants()) do
+                    if obj:IsA("Model") and string.find(obj.Name, "Egg") then
+                        local part = obj:FindFirstChild("PrimaryPart") or obj:FindFirstChildWhichIsA("BasePart")
+                        if part and (p.HumanoidRootPart.Position - part.Position).Magnitude < 15 then
+                            firetouchinterest(p.HumanoidRootPart, part, 0)
+                            firetouchinterest(p.HumanoidRootPart, part, 1)
+                        end
+                    end
+                end
+            end
+        end
+    end)
+end)
+
+-- 4. Tốc độ chạy
+b("Tăng tốc chạy (Speed)", 156, function()
+    local c = game.Players.LocalPlayer.Character
+    if c and c:FindFirstChild("Humanoid") then c.Humanoid.WalkSpeed = 50 end
+end)
+
+-- 5. Nhảy cao
+b("Nhảy cao (Super Jump)", 193, function()
+    local c = game.Players.LocalPlayer.Character
+    if c and c:FindFirstChild("Humanoid") then c.Humanoid.JumpPower = 130 end
+end)
+
+-- 6. Nhảy vô tận
+b("Nhảy vô tận (Inf Jump)", 230, function()
+    game:GetService("UserInputService").JumpRequest:Connect(function()
+        local c = game.Players.LocalPlayer.Character
+        if c and c:FindFirstChild("Humanoid") then
+            c.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        end
+    end)
+end)
+
+-- 7. Bay lượn map (Fly đơn giản)
+b("Bật Chế Độ Bay (Fly)", 267, function()
+    local p = game.Players.LocalPlayer
+    local c = p.Character
+    if c and c:FindFirstChild("HumanoidRootPart") then
+        local bv = Instance.new("BodyVelocity", c.HumanoidRootPart)
+        bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+        bv.Velocity = Vector3.new(0, 0, 0)
+        task.spawn(function()
+            while c and c:FindFirstChild("HumanoidRootPart") do
+                local cam = workspace.CurrentCamera.CoordinateFrame
+                local move = Vector3.new(0,0,0)
+                if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.W) then move = move + cam.LookVector end
+                if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.S) then move = move - cam.LookVector end
+                bv.Velocity = move * 50
+                task.wait()
+            end
+            bv:Destroy()
+        end)
+    end
+end)
+
+-- 8. Xuyên tường (NoClip)
+b("Xuyên Tường (Noclip)", 304, function()
+    game:GetService("RunService").Stepped:Connect(function()
+        local c = game.Players.LocalPlayer.Character
+        if c then
+            for _, part in ipairs(c:GetDescendants()) do
+                if part:IsA("BasePart") then part.CanCollide = false end
+            end
+        end
+    end)
+end)
+
+-- 9. Reset Mặc định
+b("Reset Mặc định", 341, function()
+    local c = game.Players.LocalPlayer.Character
+    if c and c:FindFirstChild("Humanoid") then
+        c.Humanoid.WalkSpeed = 16
+        c.Humanoid.JumpPower = 50
+    end
+end)
+
+-- 10. Đóng Menu
+b("Đóng Menu", 378, function() s:Destroy() end)
