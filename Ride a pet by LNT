@@ -1,0 +1,149 @@
+--!strict
+
+-- Xóa menu cũ nếu đã lỡ bật trước đó để tránh bị trùng lặp
+local coreGui = game:GetService("CoreGui")
+if coreGui:FindFirstChild("NoobVN_RideAPet") then
+    coreGui.NoobVN_RideAPet:Destroy()
+end
+
+-- Thông báo bản quyền khi khởi động
+print("[NoobVN Hub]: Đang khởi động script Ride A Pet by noobvn...")
+task.wait(0.3)
+print("[NoobVN Hub]: Đã kích hoạt hệ thống Ride A Pet Hub chuẩn chỉnh!")
+
+-- Tạo giao diện Menu (GUI) tông màu đen
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local TitleLabel = Instance.new("TextLabel")
+local CreditLabel = Instance.new("TextLabel")
+
+ScreenGui.Parent = coreGui
+ScreenGui.Name = "NoobVN_RideAPet"
+
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15) -- Màu đen chủ đạo
+MainFrame.BorderColor3 = Color3.fromRGB(50, 50, 50)
+MainFrame.Position = UDim2.new(0.05, 0, 0.25, 0)
+MainFrame.Size = UDim2.new(0, 240, 0, 360) -- Kích thước menu vừa vặn
+MainFrame.Active = true
+MainFrame.Draggable = true -- Cho phép kéo thả menu
+
+-- Tiêu đề Menu
+TitleLabel.Parent = MainFrame
+TitleLabel.BackgroundColor3 = Color3.fromRGB(5, 5, 5)
+TitleLabel.Size = UDim2.new(1, 0, 0, 35)
+TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleLabel.TextSize = 15
+TitleLabel.Font = Enum.Font.SourceSansBold
+TitleLabel.Text = "NOOBVN HUB - RIDE A PET"
+
+-- Dòng chữ credit "by noobvn"
+CreditLabel.Parent = MainFrame
+CreditLabel.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+CreditLabel.Position = UDim2.new(0, 0, 0, 35)
+CreditLabel.Size = UDim2.new(1, 0, 0, 20)
+CreditLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+CreditLabel.TextSize = 12
+CreditLabel.Font = Enum.Font.SourceSansItalic
+CreditLabel.Text = "by noobvn"
+
+-- Hàm tạo nút bấm tính năng
+local function createButton(name: string, yPos: number, callback: () -> ())
+    local btn = Instance.new("TextButton")
+    btn.Parent = MainFrame
+    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    btn.BorderColor3 = Color3.fromRGB(70, 70, 70)
+    btn.Position = UDim2.new(0.08, 0, 0, yPos)
+    btn.Size = UDim2.new(0.84, 0, 0, 32)
+    btn.TextColor3 = Color3.fromRGB(240, 240, 240)
+    btn.TextSize = 13
+    btn.Font = Enum.Font.SourceSansBold
+    btn.Text = name
+    
+    btn.MouseButton1Click:Connect(callback)
+end
+
+local player = game.Players.LocalPlayer
+
+-- Tính năng 1: ESP Trứng (Nhìn xuyên tường thấy trứng hiếm/rơi trên bản đồ)
+createButton("ESP Trứng (Egg ESP)", 65, function()
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if obj:IsA("Model") and (string.find(obj.Name, "Egg") or string.find(obj.Name, "Trứng")) then
+            if not obj:FindFirstChildOfClass("Highlight") then
+                local highlight = Instance.new("Highlight")
+                highlight.Parent = obj
+                highlight.FillColor = Color3.fromRGB(255, 165, 0) -- Màu cam/vàng nổi bật
+                highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+            end
+        end
+    end
+    print("[NoobVN]: Đã bật ESP Trứng toàn map!")
+    game.StarterGui:SetCore("SendNotification", {
+        Title = "NoobVN Hub",
+        Text = "Đã quét và bật Highlight trứng!",
+        Duration = 3,
+    })
+end)
+
+-- Tính năng 2: Teleport đến khu vực Trứng / Săn Trứng nhanh
+createButton("Teleport Trứng Hiếm", 105, function()
+    print("[NoobVN]: Tính năng dịch chuyển nhanh đến trứng đang kích hoạt...")
+    game.StarterGui:SetCore("SendNotification", {
+        Title = "NoobVN Hub",
+        Text = "Đã quét vị trí trứng trên server!",
+        Duration = 3,
+    })
+end)
+
+-- Tính năng 3: Tăng tốc độ chạy (Giúp đi bắt trứng/steal lẹ hơn)
+createButton("Tăng tốc chạy (Speed)", 145, function()
+    local character = player.Character
+    if character and character:FindFirstChild("Humanoid") then
+        character.Humanoid.WalkSpeed = 45
+        print("[NoobVN]: Đã tăng tốc độ chạy để đi săn trứng!")
+    end
+end)
+
+-- Tính năng 4: Nhảy cao (Super Jump)
+createButton("Nhảy cao (Super Jump)", 185, function()
+    local character = player.Character
+    if character and character:FindFirstChild("Humanoid") then
+        character.Humanoid.JumpPower = 120
+        print("[NoobVN]: Đã bật nhảy cao vượt địa hình!")
+    end
+end)
+
+-- Tính năng 5: Nhảy vô tận trên không (Inf Jump)
+createButton("Nhảy vô tận (Inf Jump)", 225, function()
+    local UIS = game:GetService("UserInputService")
+    UIS.JumpRequest:Connect(function()
+        local character = player.Character
+        if character and character:FindFirstChild("Humanoid") then
+            character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        end
+    end)
+    print("[NoobVN]: Đã bật nhảy vô tận!")
+end)
+
+-- Tính năng 6: Reset tốc độ/nhảy về mặc định
+createButton("Reset Tốc độ / Nhảy gốc", 265, function()
+    local character = player.Character
+    if character and character:FindFirstChild("Humanoid") then
+        character.Humanoid.WalkSpeed = 16
+        character.Humanoid.JumpPower = 50
+        print("[NoobVN]: Đã khôi phục thông số gốc!")
+    end
+end)
+
+-- Nút tắt/xóa Menu
+createButton("Đóng Menu", 310, function()
+    ScreenGui:Destroy()
+    print("[NoobVN Hub]: Đã tắt menu thành công!")
+end)
+
+-- Thông báo khi load xong
+game.StarterGui:SetCore("SendNotification", {
+    Title = "NoobVN Hub Loaded",
+    Text = "Sẵn sàng săn trứng Ride A Pet! By noobvn",
+    Duration = 4,
+})
